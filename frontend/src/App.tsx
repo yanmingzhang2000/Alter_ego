@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Layout, Menu, DatePicker, Select, Space, Button, Tooltip, theme } from 'antd';
 import {
   TeamOutlined,
@@ -19,17 +19,54 @@ import DataReconciliation from './pages/DataReconciliation';
 import AgentReport from './pages/AgentReport';
 import SegmentationSettings from './components/Settings/SegmentationSettings';
 import { SegmentationProvider } from './contexts/SegmentationContext';
+import { DIVISION, ALL_STUDIOS, getStudioByName } from './mock/organization';
 
 const { Header, Sider, Content, Footer } = Layout;
+
+export interface GlobalFilter {
+  studio: string | null;
+  businessLine: string | null;
+}
+
+export const GlobalFilterContext = React.createContext<{
+  filter: GlobalFilter;
+  setFilter: (f: GlobalFilter) => void;
+}>({ filter: { studio: null, businessLine: null }, setFilter: () => {} });
 
 const AppLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [filter, setFilter] = useState<GlobalFilter>({ studio: null, businessLine: null });
   const navigate = useNavigate();
   const location = useLocation();
   const {
     token: { borderRadiusLG },
   } = theme.useToken();
+
+  const studioOptions = useMemo(() => {
+    return DIVISION.studios.map((s) => ({ value: s.name, label: s.name }));
+  }, []);
+
+  const businessLineOptions = useMemo(() => {
+    if (!filter.studio) {
+      const allBL = DIVISION.studios.flatMap((s) => s.businessLines);
+      const unique = Array.from(new Map(allBL.map((bl) => [bl.code, bl])).values());
+      return unique.map((bl) => ({ value: bl.code, label: `${bl.name}（${bl.code}）` }));
+    }
+    const studio = getStudioByName(filter.studio);
+    return (studio?.businessLines ?? []).map((bl) => ({
+      value: bl.code,
+      label: `${bl.name}（${bl.code}）`,
+    }));
+  }, [filter.studio]);
+
+  const handleStudioChange = (value: string) => {
+    setFilter({ studio: value, businessLine: null });
+  };
+
+  const handleBusinessLineChange = (value: string) => {
+    setFilter((prev) => ({ ...prev, businessLine: value }));
+  };
 
   const menuItems = [
     { key: '/', icon: <DashboardOutlined />, label: '经营概览' },
@@ -41,89 +78,96 @@ const AppLayout: React.FC = () => {
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={setCollapsed}
-        style={{ background: '#001529' }}
-      >
-        <div
-          style={{
-            height: 64,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
-            fontSize: collapsed ? 16 : 18,
-            fontWeight: 'bold',
-            borderBottom: '1px solid rgba(255,255,255,0.1)',
-          }}
+    <GlobalFilterContext.Provider value={{ filter, setFilter }}>
+      <Layout style={{ minHeight: '100vh' }}>
+        <Sider
+          collapsible
+          collapsed={collapsed}
+          onCollapse={setCollapsed}
+          style={{ background: '#001529' }}
         >
-          <RiseOutlined style={{ marginRight: collapsed ? 0 : 8 }} />
-          {!collapsed && 'Alter Ego'}
-        </div>
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={[location.pathname]}
-          items={menuItems}
-          onClick={({ key }) => navigate(key)}
-        />
-      </Sider>
+          <div
+            style={{
+              height: 64,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#fff',
+              fontSize: collapsed ? 16 : 18,
+              fontWeight: 'bold',
+              borderBottom: '1px solid rgba(255,255,255,0.1)',
+            }}
+          >
+            <RiseOutlined style={{ marginRight: collapsed ? 0 : 8 }} />
+            {!collapsed && 'Alter Ego'}
+          </div>
+          <Menu
+            theme="dark"
+            mode="inline"
+            selectedKeys={[location.pathname]}
+            items={menuItems}
+            onClick={({ key }) => navigate(key)}
+          />
+        </Sider>
 
-      <Layout>
-        <Header
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            padding: '0 24px',
-            background: '#fff',
-            borderBottom: '1px solid #f0f0f0',
-          }}
-        >
-          <Space>
-            <DatePicker picker="month" style={{ width: 140 }} />
-            <Select
-              defaultValue="all"
-              style={{ width: 140 }}
-              options={[
-                { value: 'all', label: '全部工作室' },
-                { value: '1', label: '数字营销一室' },
-                { value: '2', label: '数字营销二室' },
-                { value: '3', label: '直播电商室' },
-                { value: '4', label: '内容创意室' },
-              ]}
-            />
-            <Tooltip title="客户分层规则设置">
-              <Button
-                type="text"
-                icon={<SettingOutlined />}
-                onClick={() => setSettingsOpen(true)}
+        <Layout>
+          <Header
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              padding: '0 24px',
+              background: '#fff',
+              borderBottom: '1px solid #f0f0f0',
+            }}
+          >
+            <Space size={8}>
+              <DatePicker picker="month" style={{ width: 140 }} />
+              <Select
+                placeholder="全部工作室"
+                allowClear
+                style={{ width: 150 }}
+                options={studioOptions}
+                value={filter.studio}
+                onChange={handleStudioChange}
               />
-            </Tooltip>
-          </Space>
-        </Header>
+              <Select
+                placeholder="全部业务线"
+                allowClear
+                style={{ width: 160 }}
+                options={businessLineOptions}
+                value={filter.businessLine}
+                onChange={handleBusinessLineChange}
+              />
+              <Tooltip title="客户分层规则设置">
+                <Button
+                  type="text"
+                  icon={<SettingOutlined />}
+                  onClick={() => setSettingsOpen(true)}
+                />
+              </Tooltip>
+            </Space>
+          </Header>
 
-        <Content style={{ margin: 24, padding: 24, background: '#f5f5f5', minHeight: 280, borderRadius: borderRadiusLG }}>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/key-account" element={<KeyAccount />} />
-            <Route path="/efficiency" element={<Efficiency />} />
-            <Route path="/simulation" element={<Simulation />} />
-            <Route path="/data-reconciliation" element={<DataReconciliation />} />
-            <Route path="/agent-report" element={<AgentReport />} />
-          </Routes>
-        </Content>
+          <Content style={{ margin: 24, padding: 24, background: '#f5f5f5', minHeight: 280, borderRadius: borderRadiusLG }}>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/key-account" element={<KeyAccount />} />
+              <Route path="/efficiency" element={<Efficiency />} />
+              <Route path="/simulation" element={<Simulation />} />
+              <Route path="/data-reconciliation" element={<DataReconciliation />} />
+              <Route path="/agent-report" element={<AgentReport />} />
+            </Routes>
+          </Content>
 
-        <Footer style={{ textAlign: 'center', background: '#f5f5f5' }}>
-          Alter Ego · 业务经营看板 MVP · 数据更新频次 T+1 · 月度经营快照每月5号自动生成
-        </Footer>
+          <Footer style={{ textAlign: 'center', background: '#f5f5f5' }}>
+            Alter Ego · 业务经营看板 MVP · 数据更新频次 T+1 · 月度经营快照每月5号自动生成
+          </Footer>
+        </Layout>
+
+        <SegmentationSettings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       </Layout>
-
-      <SegmentationSettings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
-    </Layout>
+    </GlobalFilterContext.Provider>
   );
 };
 
