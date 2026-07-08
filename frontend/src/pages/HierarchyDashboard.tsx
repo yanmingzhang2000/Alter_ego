@@ -293,7 +293,7 @@ const CrossMatrixTable: React.FC<{
     },
   ];
 
-  const dataSource = crossMatrix.studios.map((studioName) => {
+  const dataSource: Record<string, string | CrossMatrixCell | null>[] = crossMatrix.studios.map((studioName) => {
     const row: Record<string, string | CrossMatrixCell | null> = { studio: studioName };
     crossMatrix.businessLines.forEach((bl) => {
       const cell = crossMatrix.cells.find(
@@ -359,33 +359,37 @@ const HierarchyDashboard: React.FC = () => {
     setViewLevel('businessLine');
   };
 
-  const breadcrumbItems = [
+  const breadcrumbItems: { title: React.ReactNode }[] = [
     { title: <BankOutlined /> },
-    viewLevel === 'division' && { title: '事业部总览' },
-    viewLevel === 'studio' && {
-      title: (
-        <Button type="link" size="small" onClick={() => setViewLevel('division')} style={{ padding: 0 }}>
-          事业部总览
-        </Button>
-      ),
-    },
-    viewLevel === 'studio' && { title: selectedStudio || '' },
-    viewLevel === 'businessLine' && {
-      title: (
-        <Button type="link" size="small" onClick={() => setViewLevel('division')} style={{ padding: 0 }}>
-          事业部总览
-        </Button>
-      ),
-    },
-    viewLevel === 'businessLine' && {
-      title: (
-        <Button type="link" size="small" onClick={() => setViewLevel('studio')} style={{ padding: 0 }}>
-          {selectedStudio}
-        </Button>
-      ),
-    },
-    viewLevel === 'businessLine' && { title: selectedBL || '' },
-  ].filter(Boolean);
+    ...(viewLevel === 'division'
+      ? [{ title: '事业部总览' }]
+      : []),
+    ...(viewLevel === 'studio'
+      ? [
+          { title: (
+            <Button type="link" size="small" onClick={() => setViewLevel('division')} style={{ padding: 0 }}>
+              事业部总览
+            </Button>
+          )},
+          { title: selectedStudio || '' },
+        ]
+      : []),
+    ...(viewLevel === 'businessLine'
+      ? [
+          { title: (
+            <Button type="link" size="small" onClick={() => setViewLevel('division')} style={{ padding: 0 }}>
+              事业部总览
+            </Button>
+          )},
+          { title: (
+            <Button type="link" size="small" onClick={() => setViewLevel('studio')} style={{ padding: 0 }}>
+              {selectedStudio}
+            </Button>
+          )},
+          { title: selectedBL || '' },
+        ]
+      : []),
+  ];
 
   const studioDetail = selectedStudio ? division.studios.find((s) => s.name === selectedStudio) : null;
   const blDetail = studioDetail?.businessLines.find((bl) => bl.code === selectedBL);
@@ -509,10 +513,10 @@ const HierarchyDashboard: React.FC = () => {
                 },
                 {
                   title: '人均营收',
-                  dataIndex: 'headcount',
+                  key: 'revenuePerPerson',
                   align: 'right' as const,
-                  render: (_: number, record: { revenue: number; headcount: number }) =>
-                    record.headcount > 0 ? formatMoney(Math.round(record.revenue / record.headcount)) : '-',
+                  render: (_: unknown, record: { revenue?: number; headcount?: number }) =>
+                    (record.headcount ?? 0) > 0 ? formatMoney(Math.round((record.revenue ?? 0) / (record.headcount ?? 1))) : '-',
                 },
               ]}
             />
