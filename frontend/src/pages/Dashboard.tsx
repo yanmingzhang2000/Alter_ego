@@ -5,6 +5,7 @@ import {
   SafetyCertificateOutlined,
   BarChartOutlined,
   WarningOutlined,
+  RobotOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { monthlySnapshot, supportLedgerData, dataConfidenceData } from '../mock/reconciliation';
@@ -175,6 +176,33 @@ const Dashboard: React.FC = () => {
               </div>
               <div style={{ fontSize: 13 }}>
                 模拟不同人力配置和价格调整对利润的影响，辅助经营决策。
+              </div>
+            </div>
+          </Card>
+        </Col>
+
+        {/* AI 洞察 */}
+        <Col xs={24} lg={12}>
+          <Card
+            title={
+              <Space>
+                <RobotOutlined style={{ color: '#722ed1' }} />
+                <span>AI 经营洞察</span>
+              </Space>
+            }
+            extra={<a onClick={() => navigate('/agent-report')}>查看报告 →</a>}
+            hoverable
+            style={{ cursor: 'pointer' }}
+            onClick={() => navigate('/agent-report')}
+          >
+            <div style={{ color: '#666', padding: '8px 0' }}>
+              <div style={{ marginBottom: 8 }}>
+                <Tag color="purple">智能分析</Tag>
+                <Tag color="red">风险预警</Tag>
+                <Tag color="cyan">行动建议</Tag>
+              </div>
+              <div style={{ fontSize: 13 }}>
+                AI 基于全量看板数据自动生成的经营洞察，包含风险预警和行动建议。
               </div>
             </div>
           </Card>

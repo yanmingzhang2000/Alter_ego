@@ -8,6 +8,7 @@ import {
   ExperimentOutlined,
   SettingOutlined,
   RiseOutlined,
+  RobotOutlined,
 } from '@ant-design/icons';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
@@ -15,6 +16,7 @@ import KeyAccount from './pages/KeyAccount';
 import Efficiency from './pages/Efficiency';
 import Simulation from './pages/Simulation';
 import DataReconciliation from './pages/DataReconciliation';
+import AgentReport from './pages/AgentReport';
 import SegmentationSettings from './components/Settings/SegmentationSettings';
 import { SegmentationProvider } from './contexts/SegmentationContext';
 
@@ -35,6 +37,7 @@ const AppLayout: React.FC = () => {
     { key: '/efficiency', icon: <BarChartOutlined />, label: '效能分析' },
     { key: '/simulation', icon: <ExperimentOutlined />, label: '经营模拟' },
     { key: '/data-reconciliation', icon: <SafetyCertificateOutlined />, label: '数据核算' },
+    { key: '/agent-report', icon: <RobotOutlined />, label: 'AI 洞察' },
   ];
 
   return (
@@ -110,6 +113,7 @@ const AppLayout: React.FC = () => {
             <Route path="/efficiency" element={<Efficiency />} />
             <Route path="/simulation" element={<Simulation />} />
             <Route path="/data-reconciliation" element={<DataReconciliation />} />
+            <Route path="/agent-report" element={<AgentReport />} />
           </Routes>
         </Content>
 
