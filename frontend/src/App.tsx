@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, theme, Card, Row, Col, Statistic, DatePicker, Select, Space } from 'antd';
+import { Layout, Menu, theme, Card, Row, Col, Statistic, DatePicker, Select, Space, Button, Tooltip } from 'antd';
 import {
   TeamOutlined,
   UserOutlined,
@@ -7,6 +7,7 @@ import {
   DashboardOutlined,
   BarChartOutlined,
   RiseOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 import WaterLine from './components/SKAFortress/WaterLine';
 import SilentWarning from './components/SKAFortress/SilentWarning';
@@ -16,12 +17,15 @@ import CostAllocation from './components/HumanXRay/CostAllocation';
 import StaffingRatio from './components/HumanXRay/StaffingRatio';
 import DataConfidence from './components/TrustModule/DataConfidence';
 import SupportLedger from './components/TrustModule/SupportLedger';
+import SegmentationSettings from './components/Settings/SegmentationSettings';
+import { SegmentationProvider } from './contexts/SegmentationContext';
 import { monthlySnapshot } from './mock/reconciliation';
 
 const { Header, Content, Footer } = Layout;
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('all');
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const {
     token: { borderRadiusLG },
   } = theme.useToken();
@@ -72,6 +76,14 @@ const App: React.FC = () => {
               { value: '4', label: '内容创意室' },
             ]}
           />
+          <Tooltip title="客户分层规则设置">
+            <Button
+              type="text"
+              icon={<SettingOutlined />}
+              style={{ color: '#fff' }}
+              onClick={() => setSettingsOpen(true)}
+            />
+          </Tooltip>
         </Space>
       </Header>
 
@@ -184,8 +196,16 @@ const App: React.FC = () => {
       <Footer style={{ textAlign: 'center', background: '#f5f5f5' }}>
         Alter Ego - 业务经营看板 MVP · 数据更新频次 T+1 · 月度经营快照每月5号自动生成
       </Footer>
+
+      <SegmentationSettings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </Layout>
   );
 };
+
+const App: React.FC = () => (
+  <SegmentationProvider>
+    <AppContent />
+  </SegmentationProvider>
+);
 
 export default App;
