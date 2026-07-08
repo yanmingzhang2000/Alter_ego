@@ -9,9 +9,11 @@ import {
   SettingOutlined,
   RiseOutlined,
   RobotOutlined,
+  BankOutlined,
 } from '@ant-design/icons';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
+import HierarchyDashboard from './pages/HierarchyDashboard';
 import KeyAccount from './pages/KeyAccount';
 import Efficiency from './pages/Efficiency';
 import Simulation from './pages/Simulation';
@@ -70,6 +72,7 @@ const AppLayout: React.FC = () => {
 
   const menuItems = [
     { key: '/', icon: <DashboardOutlined />, label: '经营概览' },
+    { key: '/hierarchy', icon: <BankOutlined />, label: '层级KPI看板' },
     { key: '/key-account', icon: <TeamOutlined />, label: '核心客户监控' },
     { key: '/efficiency', icon: <BarChartOutlined />, label: '效能分析' },
     { key: '/simulation', icon: <ExperimentOutlined />, label: '经营模拟' },
@@ -152,6 +155,7 @@ const AppLayout: React.FC = () => {
           <Content style={{ margin: 24, padding: 24, background: '#f5f5f5', minHeight: 280, borderRadius: borderRadiusLG }}>
             <Routes>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/hierarchy" element={<HierarchyDashboard />} />
               <Route path="/key-account" element={<KeyAccount />} />
               <Route path="/efficiency" element={<Efficiency />} />
               <Route path="/simulation" element={<Simulation />} />

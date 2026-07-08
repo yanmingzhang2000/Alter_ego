@@ -1,7 +1,7 @@
 import { topClients } from './skaData';
 import { efficiencyTrendData, costAllocationData, staffingRatioData } from './humanEfficiency';
 import { monthlySnapshot, supportLedgerData, dataConfidenceData } from './reconciliation';
-import { DIVISION, BUSINESS_LINES } from './organization';
+import { DIVISION } from './organization';
 
 export interface ChatMessage {
   id: string;
@@ -116,7 +116,6 @@ function findResponse(input: string): string {
 
   if (lower.includes('业务线') || lower.includes('cmc') || lower.includes('dmc') || lower.includes('ecp') || lower.includes('直播')) {
     let resp = `📊 **业务线营收分布**\n\n`;
-    const studioNames = DIVISION.studios.map((s) => s.name);
     const studioRevenue: Record<string, number> = {};
     costAllocationData.forEach((d) => { studioRevenue[d.studio] = d.revenue; });
 

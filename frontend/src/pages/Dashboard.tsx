@@ -1,59 +1,97 @@
-import React from 'react';
-import { Row, Col, Card, Statistic, Space, Tag } from 'antd';
+import React, { useContext, useMemo } from 'react';
+import { Row, Col, Card, Statistic, Space, Tag, Alert } from 'antd';
 import {
   TeamOutlined,
   SafetyCertificateOutlined,
   BarChartOutlined,
   WarningOutlined,
   RobotOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { monthlySnapshot, supportLedgerData, dataConfidenceData } from '../mock/reconciliation';
+import { GlobalFilterContext } from '../App';
+import { supportLedgerData, dataConfidenceData } from '../mock/reconciliation';
 import { efficiencyTrendData, costAllocationData } from '../mock/humanEfficiency';
 import { topClients } from '../mock/skaData';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { filter } = useContext(GlobalFilterContext);
 
-  const silentCount = topClients.filter((c) => c.isSilent).length;
-  const negativeProfitCount = topClients.filter((c) => c.grossMargin < 0).length;
+  const filteredClients = useMemo(() => {
+    return topClients.filter((c) => {
+      if (filter.studio && c.studio !== filter.studio) return false;
+      if (filter.businessLine && c.businessLine !== filter.businessLine) return false;
+      return true;
+    });
+  }, [filter.studio, filter.businessLine]);
+
+  const silentCount = filteredClients.filter((c) => c.isSilent).length;
+  const negativeProfitCount = filteredClients.filter((c) => c.grossMargin < 0).length;
   const avgEfficiency = efficiencyTrendData[efficiencyTrendData.length - 1]?.revenuePerPerson ?? 0;
-  const avgMargin = topClients.reduce((sum, c) => sum + c.grossMargin, 0) / topClients.length;
+  const avgMargin = filteredClients.length > 0
+    ? filteredClients.reduce((sum, c) => sum + c.grossMargin, 0) / filteredClients.length
+    : 0;
   const totalCost = costAllocationData.reduce((sum, d) => sum + d.totalCost, 0);
   const matchCount = dataConfidenceData.filter((d) => d.status === 'match').length;
   const avgConfidence = dataConfidenceData.length > 0
     ? Math.round((matchCount / dataConfidenceData.length) * 100)
     : 0;
 
+  const totalRevenue = filteredClients.reduce((sum, c) => sum + c.financeRevenue, 0);
+  const totalProfit = filteredClients.reduce((sum, c) => sum + c.grossProfit, 0);
+
+  const filterLabel = filter.studio
+    ? filter.businessLine
+      ? `${filter.studio} - ${filter.businessLine}`
+      : filter.studio
+    : filter.businessLine
+    ? filter.businessLine
+    : null;
+
   return (
     <div>
       <h2 style={{ marginBottom: 24, fontWeight: 600 }}>经营概览</h2>
+
+      {filterLabel && (
+        <Alert
+          message={
+            <Space>
+              <InfoCircleOutlined />
+              <span>当前筛选: <strong>{filterLabel}</strong>，下方数据已根据筛选条件更新</span>
+            </Space>
+          }
+          type="info"
+          showIcon={false}
+          style={{ marginBottom: 16 }}
+        />
+      )}
 
       {/* KPI Cards */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={12} sm={8} lg={4}>
           <Card hoverable onClick={() => navigate('/key-account')} style={{ cursor: 'pointer' }}>
-            <Statistic title="本月营收" value={monthlySnapshot.totalRevenue} precision={0} prefix="¥" suffix="元" />
+            <Statistic title="本月营收" value={totalRevenue} precision={0} prefix="¥" suffix="元" />
           </Card>
         </Col>
         <Col xs={12} sm={8} lg={4}>
           <Card hoverable onClick={() => navigate('/key-account')} style={{ cursor: 'pointer' }}>
-            <Statistic title="本月毛利" value={monthlySnapshot.grossProfit} precision={0} prefix="¥" suffix="元" valueStyle={{ color: '#52c41a' }} />
+            <Statistic title="本月毛利" value={totalProfit} precision={0} prefix="¥" suffix="元" valueStyle={{ color: '#52c41a' }} />
           </Card>
         </Col>
         <Col xs={12} sm={8} lg={4}>
           <Card hoverable onClick={() => navigate('/key-account')} style={{ cursor: 'pointer' }}>
-            <Statistic title="毛利率" value={monthlySnapshot.grossMargin} precision={1} suffix="%" valueStyle={{ color: '#1677ff' }} />
+            <Statistic title="毛利率" value={avgMargin} precision={1} suffix="%" valueStyle={{ color: '#1677ff' }} />
           </Card>
         </Col>
         <Col xs={12} sm={8} lg={4}>
           <Card hoverable onClick={() => navigate('/key-account')} style={{ cursor: 'pointer' }}>
-            <Statistic title="客户总数" value={monthlySnapshot.clientCount} suffix="家" />
+            <Statistic title="客户总数" value={filteredClients.length} suffix="家" />
           </Card>
         </Col>
         <Col xs={12} sm={8} lg={4}>
           <Card hoverable onClick={() => navigate('/efficiency')} style={{ cursor: 'pointer' }}>
-            <Statistic title="人均营收" value={monthlySnapshot.avgRevenuePerPerson} precision={0} prefix="¥" suffix="元" />
+            <Statistic title="人均营收" value={avgEfficiency} precision={0} prefix="¥" suffix="元" />
           </Card>
         </Col>
         <Col xs={12} sm={8} lg={4}>
@@ -81,7 +119,7 @@ const Dashboard: React.FC = () => {
           >
             <Row gutter={16}>
               <Col span={8}>
-                <Statistic title="SKA客户" value={topClients.length} suffix="家" valueStyle={{ fontSize: 20 }} />
+                <Statistic title="SKA客户" value={filteredClients.length} suffix="家" valueStyle={{ fontSize: 20 }} />
               </Col>
               <Col span={8}>
                 <Statistic
