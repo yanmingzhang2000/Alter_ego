@@ -19,7 +19,7 @@ import DataReconciliation from './pages/DataReconciliation';
 import AgentReport from './pages/AgentReport';
 import SegmentationSettings from './components/Settings/SegmentationSettings';
 import { SegmentationProvider } from './contexts/SegmentationContext';
-import { DIVISION, ALL_STUDIOS, getStudioByName } from './mock/organization';
+import { DIVISION, getStudioByName } from './mock/organization';
 
 const { Header, Sider, Content, Footer } = Layout;
 

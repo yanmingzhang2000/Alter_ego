@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Card, Button, Space, Tag, Typography, Row, Col, Statistic, Segmented } from 'antd';
+import { Card, Button, Space, Typography, Row, Col, Statistic, Segmented } from 'antd';
 import {
   RobotOutlined,
   ReloadOutlined,

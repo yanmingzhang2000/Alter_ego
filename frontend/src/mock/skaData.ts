@@ -1,4 +1,4 @@
-import { DIVISION, getStudioByName } from './organization';
+import { DIVISION } from './organization';
 
 export type BusinessLineCode = 'CMC' | 'DMC' | 'ECP' | 'LIVE';
 
