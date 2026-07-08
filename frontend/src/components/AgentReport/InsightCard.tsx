@@ -2,11 +2,11 @@ import React from 'react';
 import { Tag, Collapse } from 'antd';
 import type { Insight, InsightSeverity } from '../../mock/agentReport';
 
-const severityConfig: Record<InsightSeverity, { color: string; label: string; border: string }> = {
-  critical: { color: '#ff4d4f', label: '紧急', border: '#ff4d4f' },
-  warning: { color: '#faad14', label: '关注', border: '#faad14' },
-  info: { color: '#1677ff', label: '洞察', border: '#1677ff' },
-  positive: { color: '#52c41a', label: '良好', border: '#52c41a' },
+const severityConfig: Record<InsightSeverity, { color: string; label: string }> = {
+  critical: { color: '#ff4d4f', label: '紧急' },
+  warning: { color: '#faad14', label: '关注' },
+  info: { color: '#1677ff', label: '洞察' },
+  positive: { color: '#52c41a', label: '良好' },
 };
 
 interface InsightCardProps {
@@ -20,77 +20,73 @@ const InsightCard: React.FC<InsightCardProps> = ({ insight, animationDelay = 0 }
   return (
     <div
       style={{
-        display: 'flex',
-        gap: 12,
-        marginBottom: 16,
-        animation: `fadeSlideIn 0.4s ease-out ${animationDelay}s both`,
+        background: '#fff',
+        borderRadius: 8,
+        border: '1px solid #f0f0f0',
+        borderLeft: `3px solid ${config.color}`,
+        padding: '14px 16px',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+        transition: 'box-shadow 0.2s, transform 0.2s',
+        cursor: 'default',
+        animation: `fadeSlideIn 0.3s ease-out ${animationDelay}s both`,
+        height: '100%',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+        e.currentTarget.style.transform = 'translateY(-1px)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.03)';
+        e.currentTarget.style.transform = 'translateY(0)';
       }}
     >
-      {/* Avatar */}
-      <div
-        style={{
-          width: 40,
-          height: 40,
-          borderRadius: 20,
-          background: `linear-gradient(135deg, ${config.border}22, ${config.border}44)`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 18,
-          flexShrink: 0,
-          border: `2px solid ${config.border}33`,
-        }}
-      >
-        {insight.icon}
-      </div>
-
-      {/* Bubble */}
-      <div style={{ flex: 1, maxWidth: 680 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-          <Tag
-            color={config.color}
-            style={{ margin: 0, fontSize: 11, lineHeight: '18px', padding: '0 6px' }}
-          >
-            {config.label}
-          </Tag>
-          <span style={{ fontSize: 12, color: '#999' }}>{insight.category}</span>
-        </div>
-
-        <div
-          style={{
-            background: '#fff',
-            borderRadius: '2px 12px 12px 12px',
-            padding: '12px 16px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-            border: `1px solid ${config.border}22`,
-            borderLeft: `3px solid ${config.border}`,
-          }}
+      {/* Top: Icon + Tag + Category */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+        <span style={{ fontSize: 16 }}>{insight.icon}</span>
+        <Tag
+          color={config.color}
+          style={{ margin: 0, fontSize: 11, lineHeight: '18px', padding: '0 6px' }}
         >
-          <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 6, color: '#1a1a1a' }}>
-            {insight.title}
-          </div>
-          <div style={{ fontSize: 13, color: '#444', lineHeight: 1.7 }}>
-            {insight.content}
-          </div>
-
-          <Collapse
-            ghost
-            size="small"
-            style={{ marginTop: 8 }}
-            items={[
-              {
-                key: '1',
-                label: <span style={{ fontSize: 12, color: '#999' }}>查看详细分析</span>,
-                children: (
-                  <div style={{ fontSize: 12, color: '#666', lineHeight: 1.8, borderTop: '1px solid #f0f0f0', paddingTop: 8 }}>
-                    {insight.detail}
-                  </div>
-                ),
-              },
-            ]}
-          />
-        </div>
+          {config.label}
+        </Tag>
+        <span style={{ fontSize: 11, color: '#bbb' }}>{insight.category}</span>
       </div>
+
+      {/* Title */}
+      <div style={{ fontWeight: 600, fontSize: 14, color: '#1a1a1a', marginBottom: 6 }}>
+        {insight.title}
+      </div>
+
+      {/* Content */}
+      <div style={{ fontSize: 13, color: '#555', lineHeight: 1.7 }}>
+        {insight.content}
+      </div>
+
+      {/* Detail Collapse */}
+      <Collapse
+        ghost
+        size="small"
+        style={{ marginTop: 4 }}
+        items={[
+          {
+            key: '1',
+            label: <span style={{ fontSize: 12, color: '#bbb' }}>详细分析</span>,
+            children: (
+              <div style={{ fontSize: 12, color: '#666', lineHeight: 1.8, borderTop: '1px solid #f5f5f5', paddingTop: 8 }}>
+                {insight.detail}
+              </div>
+            ),
+          },
+        ]}
+      />
+
+      {/* CSS Animation */}
+      <style>{`
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };
