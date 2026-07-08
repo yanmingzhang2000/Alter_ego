@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Card, Button, Space, Typography, Row, Col, Statistic, Segmented } from 'antd';
+import { Card, Button, Space, Typography, Row, Col, Statistic, Segmented, Tabs } from 'antd';
 import {
   RobotOutlined,
   ReloadOutlined,
@@ -9,8 +9,11 @@ import {
   WarningOutlined,
   InfoCircleOutlined,
   CheckCircleOutlined,
+  MessageOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
 import InsightCard from '../components/AgentReport/InsightCard';
+import ChatPanel from '../components/AgentReport/ChatPanel';
 import { agentInsights, agentMetadata } from '../mock/agentReport';
 import type { InsightSeverity } from '../mock/agentReport';
 
@@ -25,7 +28,7 @@ const severityConfig: Record<InsightSeverity, { color: string; label: string; ic
 
 const categories = ['全部', '客户风险', '效能趋势', '成本结构', '人效诊断', '数据质量', '跨室协作', '行动建议'];
 
-const AgentReport: React.FC = () => {
+const InsightReport: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('全部');
   const [isRegenerating, setIsRegenerating] = useState(false);
 
@@ -174,6 +177,36 @@ const AgentReport: React.FC = () => {
         </span>
       </div>
     </div>
+  );
+};
+
+const AgentReport: React.FC = () => {
+  return (
+    <Tabs
+      defaultActiveKey="chat"
+      items={[
+        {
+          key: 'chat',
+          label: (
+            <Space>
+              <MessageOutlined />
+              AI 对话
+            </Space>
+          ),
+          children: <ChatPanel />,
+        },
+        {
+          key: 'report',
+          label: (
+            <Space>
+              <FileTextOutlined />
+              洞察报告
+            </Space>
+          ),
+          children: <InsightReport />,
+        },
+      ]}
+    />
   );
 };
 
