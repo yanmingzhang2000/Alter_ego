@@ -17,20 +17,23 @@ export const dataConfidenceData: DataConfidence[] = [
 
 export interface SupportLedger {
   id: string;
-  fromStudio: string;
-  toStudio: string;
+  fromStudio: string;   // 支援方
+  toStudio: string;     // 受援方
   projectName: string;
   supportDays: number;
   supportPersons: number;
   estimatedCost: number;
   month: string;
+  costBearer: string;       // 成本承担方（受援方）
+  revenueReceiver: string;  // 收益归属方（支援方）
+  settlementAmount: number; // 双向结算金额（= estimatedCost）
 }
 
 export const supportLedgerData: SupportLedger[] = [
-  { id: '1', fromStudio: '数字营销一室', toStudio: '直播电商室', projectName: '京东618大促', supportDays: 15, supportPersons: 2, estimatedCost: 85000, month: '2026-06' },
-  { id: '2', fromStudio: '内容创意室', toStudio: '数字营销二室', projectName: '阿里妈妈内容营销', supportDays: 8, supportPersons: 1, estimatedCost: 32000, month: '2026-06' },
-  { id: '3', fromStudio: '直播电商室', toStudio: '数字营销一室', projectName: '美团品牌直播', supportDays: 10, supportPersons: 3, estimatedCost: 120000, month: '2026-06' },
-  { id: '4', fromStudio: '数字营销二室', toStudio: '内容创意室', projectName: '腾讯游戏推广', supportDays: 5, supportPersons: 1, estimatedCost: 18000, month: '2026-06' },
+  { id: '1', fromStudio: '数字营销一室', toStudio: '直播电商室', projectName: '京东618大促', supportDays: 15, supportPersons: 2, estimatedCost: 85000,  month: '2026-06', costBearer: '直播电商室', revenueReceiver: '数字营销一室', settlementAmount: 85000 },
+  { id: '2', fromStudio: '内容创意室',   toStudio: '数字营销二室', projectName: '阿里妈妈内容营销', supportDays: 8,  supportPersons: 1, estimatedCost: 32000,  month: '2026-06', costBearer: '数字营销二室', revenueReceiver: '内容创意室',   settlementAmount: 32000 },
+  { id: '3', fromStudio: '直播电商室',   toStudio: '数字营销一室', projectName: '美团品牌直播',   supportDays: 10, supportPersons: 3, estimatedCost: 120000, month: '2026-06', costBearer: '数字营销一室', revenueReceiver: '直播电商室',   settlementAmount: 120000 },
+  { id: '4', fromStudio: '数字营销二室', toStudio: '内容创意室',   projectName: '腾讯游戏推广',   supportDays: 5,  supportPersons: 1, estimatedCost: 18000,  month: '2026-06', costBearer: '内容创意室',   revenueReceiver: '数字营销二室', settlementAmount: 18000 },
 ];
 
 export interface MonthlySnapshot {

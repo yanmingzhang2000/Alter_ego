@@ -15,6 +15,7 @@ import ProfitInsight from './components/SKAFortress/ProfitInsight';
 import EfficiencyTrend from './components/HumanXRay/EfficiencyTrend';
 import CostAllocation from './components/HumanXRay/CostAllocation';
 import StaffingRatio from './components/HumanXRay/StaffingRatio';
+import ScenarioAnalysis from './components/HumanXRay/ScenarioAnalysis';
 import DataConfidence from './components/TrustModule/DataConfidence';
 import SupportLedger from './components/TrustModule/SupportLedger';
 import SegmentationSettings from './components/Settings/SegmentationSettings';
@@ -163,6 +164,9 @@ const AppContent: React.FC = () => {
                   <StaffingRatio />
                 </Col>
               </Row>
+              <div style={{ marginTop: 16 }}>
+                <ScenarioAnalysis />
+              </div>
             </Card>
           </div>
         )}

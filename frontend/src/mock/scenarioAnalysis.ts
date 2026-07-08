@@ -1,0 +1,47 @@
+export interface RoleConfig {
+  role: string;
+  label: string;
+  avgMonthlyCost: number;    // 人均月成本（薪资+社保+绩效）
+  avgMonthlyRevenue: number; // 人均月产出营收（基于历史平均）
+}
+
+export const ROLE_CONFIGS: RoleConfig[] = [
+  { role: 'bd',   label: 'BD销售',    avgMonthlyCost: 25000, avgMonthlyRevenue: 180000 },
+  { role: 'cm',   label: 'CM客户经理', avgMonthlyCost: 22000, avgMonthlyRevenue: 0 },
+  { role: 'ao',   label: 'AO优化师',   avgMonthlyCost: 18000, avgMonthlyRevenue: 0 },
+  { role: 'pm',   label: 'PM项目经理', avgMonthlyCost: 24000, avgMonthlyRevenue: 0 },
+  { role: 'kol',  label: 'KOL运营',    avgMonthlyCost: 20000, avgMonthlyRevenue: 0 },
+];
+
+export interface StudioBaseline {
+  studio: string;
+  headcount: number;
+  monthlyRevenue: number;
+  monthlyCost: number;
+  monthlyProfit: number;
+}
+
+export const STUDIO_BASELINES: StudioBaseline[] = [
+  { studio: '数字营销一室', headcount: 17, monthlyRevenue: 3650000, monthlyCost: 1475000, monthlyProfit: 2175000 },
+  { studio: '数字营销二室', headcount: 13, monthlyRevenue: 2780000, monthlyCost: 1213000, monthlyProfit: 1567000 },
+  { studio: '直播电商室',   headcount: 24, monthlyRevenue: 4920000, monthlyCost: 1982000, monthlyProfit: 2938000 },
+  { studio: '内容创意室',   headcount: 11, monthlyRevenue: 2150000, monthlyCost: 960000,  monthlyProfit: 1190000 },
+];
+
+export interface ClientProject {
+  id: string;
+  name: string;
+  studio: string;
+  monthlyRevenue: number;
+  monthlyCost: number;
+  grossMargin: number;
+}
+
+export const CLIENT_PROJECTS: ClientProject[] = [
+  { id: '1', name: '华为技术有限公司',   studio: '数字营销一室', monthlyRevenue: 237500, monthlyCost: 165000, grossMargin: 30.5 },
+  { id: '2', name: '字节跳动科技',       studio: '直播电商室',   monthlyRevenue: 181700, monthlyCost: 141500, grossMargin: 22.1 },
+  { id: '3', name: '阿里巴巴集团',       studio: '数字营销二室', monthlyRevenue: 163300, monthlyCost: 112500, grossMargin: 31.1 },
+  { id: '4', name: '腾讯科技',           studio: '内容创意室',   monthlyRevenue: 137500, monthlyCost: 85000,  grossMargin: 38.2 },
+  { id: '5', name: '京东集团',           studio: '直播电商室',   monthlyRevenue: 118300, monthlyCost: 91000,  grossMargin: 23.1 },
+  { id: '6', name: '美团点评',           studio: '数字营销一室', monthlyRevenue: 106700, monthlyCost: 78000,  grossMargin: 26.9 },
+];
