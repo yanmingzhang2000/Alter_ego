@@ -12,6 +12,7 @@ import { Column, Pie } from '@ant-design/charts';
 import { GlobalFilterContext } from '../App';
 import {
   buildFilteredHierarchy,
+  BusinessLineSummary,
   DivisionDetail,
   StudioDetail,
   CrossMatrix,
@@ -293,8 +294,8 @@ const CrossMatrixTable: React.FC<{
     },
   ];
 
-  const dataSource: Record<string, string | CrossMatrixCell | null>[] = crossMatrix.studios.map((studioName) => {
-    const row: Record<string, string | CrossMatrixCell | null> = { studio: studioName };
+  const dataSource: { studio: string; [key: string]: string | CrossMatrixCell | null }[] = crossMatrix.studios.map((studioName) => {
+    const row: { studio: string; [key: string]: string | CrossMatrixCell | null } = { studio: studioName };
     crossMatrix.businessLines.forEach((bl) => {
       const cell = crossMatrix.cells.find(
         (c) => c.studioName === studioName && c.businessLineCode === bl.code
@@ -304,12 +305,12 @@ const CrossMatrixTable: React.FC<{
     return row;
   });
 
-  const totalRow = {
+  const totalRow: { studio: string; [key: string]: string | CrossMatrixCell | null } = {
     studio: '合计',
-    ...crossMatrix.businessLines.reduce((acc, bl) => {
-      acc[bl.code] = crossMatrix.colTotals[bl.code];
+    ...crossMatrix.businessLines.reduce<Record<string, CrossMatrixCell | null>>((acc, bl) => {
+      acc[bl.code] = crossMatrix.colTotals[bl.code] as unknown as CrossMatrixCell | null;
       return acc;
-    }, {} as Record<string, { revenue: number }>),
+    }, {}),
   };
 
   return (
@@ -476,7 +477,7 @@ const HierarchyDashboard: React.FC = () => {
                 {
                   title: '业务线',
                   dataIndex: 'name',
-                  render: (text: string, record: { code: string }) => (
+                  render: (text: string, record: BusinessLineSummary) => (
                     <Space>
                       <span style={{ fontWeight: 500 }}>{text}</span>
                       <Tag>{record.code}</Tag>
@@ -515,8 +516,8 @@ const HierarchyDashboard: React.FC = () => {
                   title: '人均营收',
                   key: 'revenuePerPerson',
                   align: 'right' as const,
-                  render: (_: unknown, record: { revenue?: number; headcount?: number }) =>
-                    (record.headcount ?? 0) > 0 ? formatMoney(Math.round((record.revenue ?? 0) / (record.headcount ?? 1))) : '-',
+                  render: (_: unknown, record: BusinessLineSummary) =>
+                    record.headcount > 0 ? formatMoney(Math.round(record.revenue / record.headcount)) : '-',
                 },
               ]}
             />
